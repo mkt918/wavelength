@@ -16,6 +16,7 @@
     players: 'wavelength.players',
     best: 'wavelength.best',
     game: 'wavelength.game',
+    fx: 'wavelength.fx',
   };
 
   const PRESET_LABEL = { official: '公式', easy: 'かんたん', hard: 'むずかしい' };
@@ -47,6 +48,17 @@
     game: null,
     dialDeg: 90,
   };
+
+  // ---- 演出（音・振動） ------------------------------------------------------
+  const fxStored = load(KEYS.fx);
+  const fxOn = fxStored === null ? true : !!fxStored;
+  if (window.WavelengthFX) window.WavelengthFX.setEnabled(fxOn);
+  $('#fxOn').checked = fxOn;
+  $('#fxOn').addEventListener('change', (ev) => {
+    const on = ev.target.checked;
+    save(KEYS.fx, on);
+    if (window.WavelengthFX) window.WavelengthFX.setEnabled(on);
+  });
 
   function zoneSettings(settings) {
     return { wedgeDeg: settings.wedgeDeg, zonePoints: L.zonePoints(settings) };
@@ -105,6 +117,14 @@
   function setEnds(prefix, face) {
     slot(prefix + 'Left').textContent = face ? face.left : '';
     slot(prefix + 'Right').textContent = face ? face.right : '';
+  }
+
+  /** 同じ要素に対して CSS のポップインアニメーションを毎回リスタートする */
+  function popIn(el) {
+    if (!el) return;
+    el.classList.remove('is-popping');
+    void el.offsetWidth; // 強制リフローでアニメーションを再スタートさせる
+    el.classList.add('is-popping');
   }
 
   // ---- setup --------------------------------------------------------------
@@ -190,6 +210,7 @@
       alert('お題カードがありません（data/prompts.js を確認してください）');
       return;
     }
+    if (window.WavelengthFX) window.WavelengthFX.unlock(); // ユーザー操作の中で AudioContext を起こしておく
     app.game = L.createGame({ deck: DECK, settings: app.settings, rng: rng, players: app.players });
     app.dialDeg = 90;
     show('handoff-psychic');
@@ -274,6 +295,7 @@
     });
   });
   $('#tDecideBtn').addEventListener('click', () => {
+    if (window.WavelengthFX) window.WavelengthFX.unlock();
     app.game = L.applyGuess(app.game, app.dialDeg);
     show('reveal');
   });
@@ -296,6 +318,9 @@
     $('#rTotal').textContent = g.score + ' 点';
     $('#rLeft').textContent = L.cardsRemaining(g) + ' 枚';
     $('#rNextBtn').textContent = L.cardsRemaining(g) === 0 ? '結果を見る' : '次のラウンドへ';
+
+    popIn($('.result__points'));
+    if (window.WavelengthFX) window.WavelengthFX.playReveal(res);
   };
 
   $('#rNextBtn').addEventListener('click', () => {
@@ -316,6 +341,8 @@
       save(KEYS.best, { score: g.score, baseMax: baseMax, date: new Date().toISOString().slice(0, 10) });
     }
     show('result');
+    if (window.WavelengthFX) window.WavelengthFX.playFinish();
+    popIn($('.score'));
   }
 
   renderers.result = function () {

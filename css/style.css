@@ -604,6 +604,20 @@ body[data-screen="psychic"] .card { background: var(--color-paper); }
   .face { flex: 1 1 0; }
 }
 
+/* ============================================================
+   結果発表の演出（スコアのポップイン）
+   ============================================================ */
+@keyframes wl-pop {
+  0%   { transform: scale(0.7); opacity: 0; }
+  60%  { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.is-popping { animation: wl-pop 420ms var(--ease-out); }
+
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { transition-duration: 0.01ms !important; }
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }

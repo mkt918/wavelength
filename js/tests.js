@@ -67,7 +67,7 @@
     const s = L.normalizeSettings({ rounds: 99, wedgeDeg: 1, centerPoints: 'x', outerPoints: 0, bonusOnCenter: 0 });
     assertEqual(s.rounds, 15);
     assertEqual(s.wedgeDeg, 4);
-    assertEqual(s.centerPoints, 3);
+    assertEqual(s.centerPoints, 4);
     assertEqual(s.outerPoints, 1);
     assertEqual(s.bonusOnCenter, false);
     assertEqual(s.hintOnScreen, true);
@@ -94,10 +94,11 @@
     assertEqual(L.matchPreset(s), 'hard');
   });
 
-  test('zonePoints: 公式は 2-3-3-3-2、かんたんは 2-3-4-3-2', () => {
-    assertEqual(L.zonePoints(L.PRESETS.official), [2, 3, 3, 3, 2]);
+  test('zonePoints: 公式・かんたんは 2-3-4-3-2、むずかしいは 2-3-3-3-2', () => {
+    assertEqual(L.zonePoints(L.PRESETS.official), [2, 3, 4, 3, 2]);
     assertEqual(L.zonePoints(L.PRESETS.easy), [2, 3, 4, 3, 2]);
-    assertEqual(L.zonePoints({ outerPoints: 1 }), [1, 3, 3, 3, 1]);
+    assertEqual(L.zonePoints(L.PRESETS.hard), [2, 3, 3, 3, 2]);
+    assertEqual(L.zonePoints({ outerPoints: 1 }), [1, 3, 4, 3, 1]);
   });
 
   // ---- ターゲット --------------------------------------------------------
@@ -128,8 +129,8 @@
   // ---- 得点 ----------------------------------------------------------------
 
   test('scoreFor: 中央ちょうどは中央ゾーン', () => {
-    assertEqual(L.scoreFor(90, 90, OFFICIAL), { points: 3, zoneIndex: 2 });
-    assertEqual(L.scoreFor(90, 90, L.PRESETS.easy), { points: 4, zoneIndex: 2 });
+    assertEqual(L.scoreFor(90, 90, OFFICIAL), { points: 4, zoneIndex: 2 });
+    assertEqual(L.scoreFor(90, 90, L.PRESETS.hard), { points: 3, zoneIndex: 2 });
   });
 
   test('scoreFor: 各ゾーンの中央付近', () => {
@@ -231,8 +232,8 @@
   test('applyGuess: 中央命中で得点 + ボーナスカード追加', () => {
     const g0 = L.createGame({ deck: makeDeck(20), settings: OFFICIAL, rng: seeded(3) });
     const g1 = L.applyGuess(g0, g0.current.targetDeg);
-    assertEqual(g1.score, 3);
-    assertEqual(g1.current.result.points, 3);
+    assertEqual(g1.score, 4);
+    assertEqual(g1.current.result.points, 4);
     assertEqual(g1.current.result.zoneIndex, 2);
     assertEqual(g1.current.result.bonus, true);
     assertEqual(g1.slot.length, 7, 'slot に 1 枚追加される');
@@ -315,7 +316,7 @@
   });
 
   test('通しプレイ: 全中央命中で 7 + ボーナスが予備の限りで続く', () => {
-    // 予備 3 枚 → 7 + 3 = 10 ラウンド、得点 30
+    // 予備 3 枚 → 7 + 3 = 10 ラウンド、得点 40（中央4点 × 10）
     let g = L.createGame({ deck: makeDeck(10), settings: OFFICIAL, rng: seeded(5) });
     let rounds = 0;
     while (!g.finished) {
@@ -324,7 +325,7 @@
       g = L.nextRound(g, seeded(rounds));
     }
     assertEqual(rounds, 10);
-    assertEqual(g.score, 30);
+    assertEqual(g.score, 40);
     assertEqual(g.history.filter((h) => h.bonus).length, 3);
     assertEqual(L.totalRounds(g), 10);
   });
@@ -349,8 +350,8 @@
   // ---- 達成度 ----------------------------------------------------------------
 
   test('baseMaxScore', () => {
-    assertEqual(L.baseMaxScore(OFFICIAL), 21);
-    assertEqual(L.baseMaxScore(L.PRESETS.easy), 28);
+    assertEqual(L.baseMaxScore(OFFICIAL), 28);
+    assertEqual(L.baseMaxScore(L.PRESETS.hard), 21);
     assertEqual(L.baseMaxScore({ rounds: 10, centerPoints: 4 }), 40);
   });
 

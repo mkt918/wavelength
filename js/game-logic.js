@@ -26,7 +26,7 @@
   const DEFAULT_SETTINGS = Object.freeze({
     rounds: 7,
     wedgeDeg: 7,
-    centerPoints: 3,
+    centerPoints: 4,
     outerPoints: 2,
     bonusOnCenter: true,
     hintOnScreen: true,
@@ -35,7 +35,8 @@
   // プリセットは hintOnScreen を含まない（表示の好みであってルールではない）
   const PRESET_KEYS = ['rounds', 'wedgeDeg', 'centerPoints', 'outerPoints', 'bonusOnCenter'];
   const PRESETS = Object.freeze({
-    official: Object.freeze({ rounds: 7, wedgeDeg: 7,  centerPoints: 3, outerPoints: 2, bonusOnCenter: true }),
+    // 公式は対戦モードの配点（中央4点、外側から 2-3-4-3-2）に合わせる
+    official: Object.freeze({ rounds: 7, wedgeDeg: 7,  centerPoints: 4, outerPoints: 2, bonusOnCenter: true }),
     easy:     Object.freeze({ rounds: 7, wedgeDeg: 10, centerPoints: 4, outerPoints: 2, bonusOnCenter: true }),
     hard:     Object.freeze({ rounds: 7, wedgeDeg: 5,  centerPoints: 3, outerPoints: 2, bonusOnCenter: false }),
   });

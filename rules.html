@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f7f3ee">
+<title>ルール — ウェーブレングス</title>
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<main class="screen">
+  <header class="title">
+    <p class="title__kicker">協力モード</p>
+    <h1 class="title__name">ルール</h1>
+    <p class="title__lead">出題者が見ているターゲットを、ヒント1つだけを頼りにチームで当てるゲームです。1台の端末を回して遊びます。</p>
+  </header>
+
+  <div class="card">
+    <h2 class="card__title">遊び方</h2>
+    <ol class="steps">
+      <li class="steps__item">
+        <span class="steps__num">1</span>
+        <div class="steps__body">
+          <p class="steps__head">出題者を決める</p>
+          <p class="steps__text">名前を入力しておくと、ラウンドごとに自動で順番が回ります。入力しなくても遊べます。</p>
+        </div>
+      </li>
+      <li class="steps__item">
+        <span class="steps__num">2</span>
+        <div class="steps__body">
+          <p class="steps__head">出題者だけが端末を見る</p>
+          <p class="steps__text">お題カードの表・裏どちらかの面を選ぶと、ダイヤルの上にターゲット（濃い色の部分）が表示されます。これが見えるのは出題者だけです。</p>
+        </div>
+      </li>
+      <li class="steps__item">
+        <span class="steps__num">3</span>
+        <div class="steps__body">
+          <p class="steps__head">ヒントを1つ伝える</p>
+          <p class="steps__text">ターゲットの中央がどのあたりかを、一言のヒントで伝えます。伝えたら画面を隠してチームに渡してください。</p>
+        </div>
+      </li>
+      <li class="steps__item">
+        <span class="steps__num">4</span>
+        <div class="steps__body">
+          <p class="steps__head">チームでダイヤルを合わせる</p>
+          <p class="steps__text">出題者はここから話したりジェスチャーしたりできません。残りのメンバーで相談しながらダイヤルの位置を決めます。</p>
+        </div>
+      </li>
+      <li class="steps__item">
+        <span class="steps__num">5</span>
+        <div class="steps__body">
+          <p class="steps__head">公開・得点</p>
+          <p class="steps__text">ターゲットが公開され、ダイヤルが当たったゾーンに応じて得点が入ります。全カードを使い切ったら終了です。</p>
+        </div>
+      </li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2 class="card__title">得点</h2>
+    <div class="dialwrap">
+      <div class="dialwrap__ends">
+        <span class="dialwrap__end">熱い</span>
+        <span class="dialwrap__end dialwrap__end--right">冷たい</span>
+      </div>
+      <div class="dial" id="sampleDial" aria-hidden="true"></div>
+    </div>
+    <p class="field__help">
+      ターゲットは5つのゾーンに分かれています。中央に近いほど高得点、外れると0点です。
+      既定（公式）では中央3点・その両隣3点・一番外側2点。ゾーンの広さや点数は設定画面で変えられます。
+    </p>
+    <p class="field__help">
+      中央にぴったり当たると、山札からカードが1枚追加されます（設定でオフにできます）。
+    </p>
+  </div>
+
+  <div class="card">
+    <h2 class="card__title">ヒントのコツ</h2>
+    <ul class="tips">
+      <li class="tips__item">数字・割合は使わない（例:「70%くらい」は禁止）</li>
+      <li class="tips__item">「とても」「わずかに」のような程度を表す言葉は避ける</li>
+      <li class="tips__item">「〜な人」よりも、固有名詞ひとつで伝える方が伝わりやすい</li>
+      <li class="tips__item">短く、ワンフレーズで</li>
+      <li class="tips__item">自分の感覚ではなく、一緒に遊ぶ人が理解しやすい言葉を選ぶ</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2 class="card__title">設定できる項目</h2>
+    <dl class="glossary">
+      <div class="glossary__item">
+        <dt>ラウンド数</dt>
+        <dd>山札にするカードの枚数。多いほど長く遊べます（3〜15枚）。</dd>
+      </div>
+      <div class="glossary__item">
+        <dt>ゾーンの広さ</dt>
+        <dd>1ゾーンの角度。広いほど当てやすくなります（4°〜14°、既定7°）。</dd>
+      </div>
+      <div class="glossary__item">
+        <dt>中央ゾーンの点数</dt>
+        <dd>ど真ん中に当てたときの得点（3点または4点）。</dd>
+      </div>
+      <div class="glossary__item">
+        <dt>外側ゾーンの点数</dt>
+        <dd>一番外側に当てたときの得点（1点または2点）。</dd>
+      </div>
+      <div class="glossary__item">
+        <dt>中央に当てたらカードを1枚追加</dt>
+        <dd>オンにすると、中央ヒット時に山札からカードを1枚引いてゲームを1ラウンド延長します。</dd>
+      </div>
+      <div class="glossary__item">
+        <dt>ヒントを画面に表示する</dt>
+        <dd>オフにすると、チームの画面にヒントの文字は出ません。出題者が声に出して伝える遊び方になります。</dd>
+      </div>
+    </dl>
+    <p class="field__help">プリセット「公式」「かんたん」「むずかしい」は、これらの項目をまとめて切り替えるボタンです。1つでも自分で変えると「カスタム」表示になります。</p>
+  </div>
+
+  <div class="actions">
+    <a class="btn btn--primary btn--big" href="index.html">アプリに戻る</a>
+  </div>
+</main>
+
+<script src="js/game-logic.js"></script>
+<script src="js/dial.js"></script>
+<script>
+  (function () {
+    var el = document.getElementById('sampleDial');
+    if (!el || !window.Dial || !window.WavelengthLogic) return;
+    var L = window.WavelengthLogic;
+    var settings = L.PRESETS.official;
+    var dial = window.Dial.create(el, { interactive: false });
+    dial.setTarget(90, { wedgeDeg: settings.wedgeDeg, zonePoints: L.zonePoints(settings) });
+    dial.setNeedleVisible(false);
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f7f3ee">
+<title>ウェーブレングス — 協力モード</title>
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ============================================================
+     セットアップ
+     ============================================================ -->
+<section class="screen screen--setup" data-screen="setup">
+  <header class="title">
+    <p class="title__kicker">協力モード</p>
+    <h1 class="title__name">ウェーブレングス</h1>
+    <p class="title__lead">出題者のヒントだけを頼りに、みんなでダイヤルを合わせよう。1台の端末を回して遊びます。</p>
+  </header>
+
+  <div class="card">
+    <h2 class="card__title">プレイヤー</h2>
+    <label class="field">
+      <span class="field__label">名前（任意・1行に1人）</span>
+      <textarea id="players" class="field__input" rows="3" placeholder="さくら&#10;たける&#10;…"></textarea>
+    </label>
+    <p class="field__help">入力すると出題者が順番に回ります。空欄でも遊べます。</p>
+  </div>
+
+  <div class="card">
+    <div class="card__head">
+      <h2 class="card__title">ルール</h2>
+      <span class="badge" id="presetBadge">公式</span>
+    </div>
+
+    <div class="segmented" role="group" aria-label="プリセット">
+      <button type="button" class="segmented__btn" data-preset="official">公式</button>
+      <button type="button" class="segmented__btn" data-preset="easy">かんたん</button>
+      <button type="button" class="segmented__btn" data-preset="hard">むずかしい</button>
+    </div>
+
+    <details class="details" id="settingsDetails">
+      <summary class="details__summary">くわしく設定する</summary>
+
+      <div class="setting">
+        <div class="setting__row">
+          <label class="setting__label" for="rounds">ラウンド数</label>
+          <output class="setting__value" id="roundsValue" for="rounds">7</output>
+        </div>
+        <input type="range" id="rounds" class="range" min="3" max="15" step="1" value="7" data-setting="rounds">
+      </div>
+
+      <div class="setting">
+        <div class="setting__row">
+          <label class="setting__label" for="wedgeDeg">ゾーンの広さ</label>
+          <output class="setting__value" id="wedgeDegValue" for="wedgeDeg">7°</output>
+        </div>
+        <input type="range" id="wedgeDeg" class="range" min="4" max="14" step="1" value="7" data-setting="wedgeDeg">
+        <div class="dial dial--preview" id="dialPreview" aria-hidden="true"></div>
+        <p class="field__help">1ゾーンの角度。広いほど当てやすくなります。</p>
+      </div>
+
+      <div class="setting">
+        <div class="setting__row">
+          <span class="setting__label">中央ゾーンの点数</span>
+        </div>
+        <div class="segmented segmented--small" role="group" aria-label="中央ゾーンの点数">
+          <button type="button" class="segmented__btn" data-setting="centerPoints" data-value="3">3点</button>
+          <button type="button" class="segmented__btn" data-setting="centerPoints" data-value="4">4点</button>
+        </div>
+      </div>
+
+      <div class="setting">
+        <div class="setting__row">
+          <span class="setting__label">外側ゾーンの点数</span>
+        </div>
+        <div class="segmented segmented--small" role="group" aria-label="外側ゾーンの点数">
+          <button type="button" class="segmented__btn" data-setting="outerPoints" data-value="1">1点</button>
+          <button type="button" class="segmented__btn" data-setting="outerPoints" data-value="2">2点</button>
+        </div>
+      </div>
+
+      <label class="switch">
+        <span class="switch__label">中央に当てたらカードを1枚追加</span>
+        <input type="checkbox" class="switch__input" id="bonusOnCenter" data-setting="bonusOnCenter">
+        <span class="switch__track" aria-hidden="true"></span>
+      </label>
+
+      <label class="switch">
+        <span class="switch__label">ヒントを画面に表示する</span>
+        <input type="checkbox" class="switch__input" id="hintOnScreen" data-setting="hintOnScreen">
+        <span class="switch__track" aria-hidden="true"></span>
+      </label>
+      <p class="field__help">オフにすると出題者は口頭でヒントを伝えます。</p>
+    </details>
+
+    <p class="summary" id="settingsSummary"></p>
+  </div>
+
+  <p class="best" id="bestLine" hidden></p>
+
+  <div class="actions">
+    <button type="button" class="btn btn--primary btn--big" id="startBtn">はじめる</button>
+    <a class="btn btn--ghost" href="rules.html">ルールを読む</a>
+  </div>
+</section>
+
+<!-- ============================================================
+     手渡し（出題者へ）
+     ============================================================ -->
+<section class="screen screen--cover" data-screen="handoff-psychic" hidden>
+  <div class="cover">
+    <p class="cover__kicker" id="hpRound">ラウンド 1 / 7</p>
+    <p class="cover__who" id="hpWho">出題者</p>
+    <p class="cover__msg">に端末を渡してください</p>
+    <p class="cover__note">他の人は画面を見ないでください</p>
+    <button type="button" class="btn btn--cover btn--big" data-next="psychic">出題者です — 続ける</button>
+  </div>
+</section>
+
+<!-- ============================================================
+     出題者
+     ============================================================ -->
+<section class="screen screen--psychic" data-screen="psychic" hidden>
+  <header class="bar">
+    <span class="bar__round" id="pRound">ラウンド 1 / 7</span>
+    <span class="bar__role">出題者の画面</span>
+    <button type="button" class="bar__quit" data-quit>中断</button>
+  </header>
+
+  <div class="card">
+    <h2 class="card__title">お題を選ぶ</h2>
+    <div class="faces">
+      <button type="button" class="face" data-face="a">
+        <span class="face__side" data-slot="aLeft"></span>
+        <span class="face__arrow" aria-hidden="true">⟷</span>
+        <span class="face__side" data-slot="aRight"></span>
+      </button>
+      <button type="button" class="face" data-face="b">
+        <span class="face__side" data-slot="bLeft"></span>
+        <span class="face__arrow" aria-hidden="true">⟷</span>
+        <span class="face__side" data-slot="bRight"></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="card" id="pTargetCard" hidden>
+    <h2 class="card__title">ターゲット</h2>
+    <div class="dialwrap">
+      <div class="dialwrap__ends">
+        <span class="dialwrap__end" data-slot="pLeft"></span>
+        <span class="dialwrap__end dialwrap__end--right" data-slot="pRight"></span>
+      </div>
+      <div class="dial" id="dialPsychic"></div>
+    </div>
+    <p class="field__help">中央（濃い色）の位置を表すヒントを考えてください。数字・「とても」などの程度の言葉は使わないのがコツです。</p>
+
+    <label class="field" id="pHintField">
+      <span class="field__label">ヒント</span>
+      <input type="text" id="pHint" class="field__input" maxlength="30" autocomplete="off" placeholder="例: カレー">
+    </label>
+    <p class="field__help" id="pHintOral" hidden>ヒントは声に出して伝えてください。</p>
+
+    <button type="button" class="btn btn--primary btn--big" id="pDoneBtn">ヒントを伝えた — 画面を隠す</button>
+  </div>
+</section>
+
+<!-- ============================================================
+     手渡し（チームへ）
+     ============================================================ -->
+<section class="screen screen--cover" data-screen="handoff-team" hidden>
+  <div class="cover">
+    <p class="cover__kicker" id="htRound">ラウンド 1 / 7</p>
+    <p class="cover__who">チーム</p>
+    <p class="cover__msg">に端末を渡してください</p>
+    <p class="cover__note">出題者はここから先、話したりジェスチャーしたりできません</p>
+    <button type="button" class="btn btn--cover btn--big" data-next="team">チームです — 続ける</button>
+  </div>
+</section>
+
+<!-- ============================================================
+     チーム
+     ============================================================ -->
+<section class="screen screen--team" data-screen="team" hidden>
+  <header class="bar">
+    <span class="bar__round" id="tRound">ラウンド 1 / 7</span>
+    <span class="bar__role">チームの画面</span>
+    <button type="button" class="bar__quit" data-quit>中断</button>
+  </header>
+
+  <div class="hint" id="tHintBox">
+    <span class="hint__label">ヒント</span>
+    <span class="hint__text" id="tHint"></span>
+  </div>
+
+  <div class="card">
+    <div class="dialwrap">
+      <div class="dialwrap__ends">
+        <span class="dialwrap__end" data-slot="tLeft"></span>
+        <span class="dialwrap__end dialwrap__end--right" data-slot="tRight"></span>
+      </div>
+      <div class="dial" id="dialTeam"></div>
+    </div>
+
+    <div class="finetune">
+      <button type="button" class="btn btn--round" data-nudge="-1" aria-label="左へ1度">◀</button>
+      <input type="range" class="range range--dial" id="tRange" min="0" max="180" step="0.5" value="90" aria-label="ダイヤルの位置">
+      <button type="button" class="btn btn--round" data-nudge="1" aria-label="右へ1度">▶</button>
+    </div>
+    <p class="field__help">ダイヤルをドラッグするか、スライダーで微調整。相談は自由です。</p>
+
+    <button type="button" class="btn btn--primary btn--big" id="tDecideBtn">この位置で決定</button>
+  </div>
+</section>
+
+<!-- ============================================================
+     公開
+     ============================================================ -->
+<section class="screen screen--reveal" data-screen="reveal" hidden>
+  <header class="bar">
+    <span class="bar__round" id="rRound">ラウンド 1 / 7</span>
+    <span class="bar__role">結果</span>
+  </header>
+
+  <div class="card">
+    <div class="dialwrap">
+      <div class="dialwrap__ends">
+        <span class="dialwrap__end" data-slot="rLeft"></span>
+        <span class="dialwrap__end dialwrap__end--right" data-slot="rRight"></span>
+      </div>
+      <div class="dial" id="dialReveal"></div>
+    </div>
+
+    <div class="result">
+      <p class="result__points"><span id="rPoints">0</span><span class="result__unit">点</span></p>
+      <p class="result__label" id="rLabel"></p>
+      <p class="result__bonus" id="rBonus" hidden>中央ヒット！ カードが1枚追加されました</p>
+    </div>
+
+    <dl class="stats">
+      <div class="stats__item"><dt>ヒント</dt><dd id="rHint">—</dd></div>
+      <div class="stats__item"><dt>合計</dt><dd id="rTotal">0</dd></div>
+      <div class="stats__item"><dt>残り</dt><dd id="rLeft">0</dd></div>
+    </dl>
+
+    <button type="button" class="btn btn--primary btn--big" id="rNextBtn">次のラウンドへ</button>
+  </div>
+</section>
+
+<!-- ============================================================
+     最終結果
+     ============================================================ -->
+<section class="screen screen--result" data-screen="result" hidden>
+  <header class="title title--compact">
+    <p class="title__kicker">ゲーム終了</p>
+    <h1 class="title__name">結果</h1>
+  </header>
+
+  <div class="card card--score">
+    <p class="score"><span id="fScore">0</span><span class="score__max">/ <span id="fMax">21</span></span></p>
+    <p class="score__msg" id="fMessage"></p>
+    <p class="score__sub" id="fSub"></p>
+  </div>
+
+  <div class="card">
+    <h2 class="card__title">ラウンドごとの記録</h2>
+    <ol class="history" id="fHistory"></ol>
+  </div>
+
+  <div class="actions">
+    <button type="button" class="btn btn--primary btn--big" id="fAgainBtn">同じ設定でもう一度</button>
+    <button type="button" class="btn btn--ghost" id="fSetupBtn">設定にもどる</button>
+  </div>
+</section>
+
+<script src="data/prompts.js"></script>
+<script src="js/game-logic.js"></script>
+<script src="js/dial.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

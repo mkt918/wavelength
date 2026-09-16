@@ -1,0 +1,106 @@
+/* Hallmark · genre: playful (quiet register) · macrostructure: Workbench (single-screen app) · theme: Coral
+ * enrichment: none — ダイヤルそのものが主役 · nav: none (app) · footer: none (app)
+ * tone: calm / friendly · anchor hue: coral 30 · light theme only (no dark variant by request)
+ * deviation: Web フォントを読まない。教室ネットワーク無し・file:// 起動が要件のため system font stack。
+ * pre-emit critique: P5 H4 E4 S4 R5 V4
+ */
+
+:root {
+  color-scheme: light;
+
+  /* ============================================================
+     フォント — 日本語フォールバックを明示。Web フォント無し。
+     ============================================================ */
+  --font-display: "Segoe UI Variable Display", "Segoe UI", "Hiragino Sans",
+                  "Yu Gothic UI", "Noto Sans JP", system-ui, sans-serif;
+  --font-body:    "Segoe UI", "Hiragino Sans", "Yu Gothic UI",
+                  "Noto Sans JP", system-ui, sans-serif;
+  --font-mono:    "Cascadia Mono", Consolas, "SF Mono", Menlo,
+                  "BIZ UDGothic", monospace;
+
+  /* ============================================================
+     紙とインク — Coral の暖かい near-white。純白・純黒は使わない。
+     ============================================================ */
+  --color-paper:    oklch(97.5% 0.010 75);
+  --color-paper-2:  oklch(95.0% 0.014 75);
+  --color-paper-3:  oklch(91.5% 0.018 75);
+
+  --color-ink:      oklch(22% 0.014 55);
+  --color-ink-2:    oklch(42% 0.018 55);
+  --color-ink-3:    oklch(50% 0.016 55);
+
+  --color-rule:     oklch(86% 0.016 75);
+  --color-rule-strong: oklch(72% 0.020 70);
+
+  /* ============================================================
+     アクセント — コーラル1色のトーンランプ。ゾーンの点数は濃さで表す。
+     ============================================================ */
+  --color-accent:        oklch(56% 0.13 30);   /* 主ボタン・針（白文字とのコントラスト比 4.8:1） */
+  --color-accent-deep:   oklch(46% 0.13 30);   /* 中央ゾーン・押下（同 7.4:1） */
+  --color-accent-soft:   oklch(80% 0.09 35);   /* 隣接ゾーン */
+  --color-accent-pale:   oklch(90% 0.05 40);   /* 外側ゾーン */
+  --color-accent-tint:   oklch(95% 0.025 45);  /* 出題者画面の地 */
+  --color-accent-ink:    oklch(99% 0.006 45);  /* アクセント上の文字 */
+
+  /* 手渡し画面 — 全面を濃いインクで塗り「見てはいけない」状態を明示 */
+  --color-cover:         oklch(28% 0.030 40);
+  --color-cover-2:       oklch(36% 0.030 40);
+  --color-cover-ink:     oklch(97% 0.010 75);
+
+  /* 状態 */
+  --color-focus:         oklch(50% 0.16 250);
+  --color-ok:            oklch(44% 0.11 155);
+  --color-ok-soft:       oklch(92% 0.05 155);
+  --color-danger:        oklch(52% 0.16 25);
+
+  /* ============================================================
+     タイプスケール
+     ============================================================ */
+  --text-xs:  0.75rem;
+  --text-sm:  0.875rem;
+  --text-md:  1rem;
+  --text-lg:  1.25rem;
+  --text-xl:  1.6rem;
+  --text-2xl: 2.1rem;
+  --text-display: clamp(2.2rem, 4vw + 1.2rem, 3.4rem);
+  --text-score:   clamp(3rem, 10vw, 5rem);
+
+  --leading-tight: 1.15;
+  --leading-body:  1.6;
+
+  /* ============================================================
+     4pt spacing
+     ============================================================ */
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs:  0.75rem;
+  --space-sm:  1rem;
+  --space-md:  1.5rem;
+  --space-lg:  2rem;
+  --space-xl:  3rem;
+  --space-2xl: 4rem;
+
+  /* ============================================================
+     角丸・罫線・影
+     ============================================================ */
+  --radius-card:  16px;
+  --radius-input: 10px;
+  --radius-pill:  999px;
+  --rule-hair: 1px;
+  --rule-bold: 2px;
+  --shadow-card: 0 8px 24px -14px oklch(40% 0.06 40 / 0.5);
+  --shadow-lift: 0 14px 32px -16px oklch(40% 0.08 40 / 0.6);
+
+  /* ============================================================
+     モーション
+     ============================================================ */
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in:     cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-short: 140ms;
+  --dur-med:   240ms;
+  --dur-long:  520ms;
+
+  /* タップ領域の最小値 */
+  --tap: 44px;
+}

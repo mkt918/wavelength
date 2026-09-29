@@ -14,8 +14,34 @@
   <header class="title">
     <p class="title__kicker">協力モード</p>
     <h1 class="title__name">ルール</h1>
-    <p class="title__lead">出題者が見ているターゲットを、ヒント1つだけを頼りにチームで当てるゲームです。1台の端末を回して遊びます。</p>
+    <p class="title__lead">出題者だけが見えるターゲットの位置を、お題（ひとこと）だけを頼りにチームで当てるゲームです。1台の端末を回して遊びます。</p>
   </header>
+
+  <div class="card">
+    <h2 class="card__title">ことばの説明</h2>
+    <dl class="glossary">
+      <div class="glossary__item">
+        <dt>ものさし</dt>
+        <dd>両端に言葉が書かれた1本の線。たとえば「熱い」⟷「冷たい」。カードの表と裏に1つずつあり、出題者がどちらかを選びます。</dd>
+      </div>
+      <div class="glossary__item">
+        <dt>ターゲット</dt>
+        <dd>ものさしの上にある、色のついた正解のゾーン。出題者にだけ見えます。</dd>
+      </div>
+      <div class="glossary__item">
+        <dt>お題</dt>
+        <dd>出題者が、ターゲットの位置を伝えるために言う「ひとこと」。たとえば、熱い寄りなら「サウナ」。</dd>
+      </div>
+      <div class="glossary__item">
+        <dt>ダイヤル</dt>
+        <dd>チームが動かす針。お題を頼りに、ターゲットの位置に合わせます。</dd>
+      </div>
+      <div class="glossary__item">
+        <dt>出題者・チーム</dt>
+        <dd>お題を出す人が出題者、それ以外の全員がチームです。出題者はラウンドごとに交代できます。</dd>
+      </div>
+    </dl>
+  </div>
 
   <div class="card">
     <h2 class="card__title">遊び方</h2>
@@ -31,14 +57,14 @@
         <span class="steps__num">2</span>
         <div class="steps__body">
           <p class="steps__head">出題者だけが端末を見る</p>
-          <p class="steps__text">お題カードの表・裏どちらかの面を選ぶと、ダイヤルの上にターゲット（濃い色の部分）が表示されます。これが見えるのは出題者だけです。</p>
+          <p class="steps__text">ものさしカードの表・裏どちらかの面を選ぶと、ダイヤルの上にターゲット（濃い色の部分）が表示されます。これが見えるのは出題者だけです。</p>
         </div>
       </li>
       <li class="steps__item">
         <span class="steps__num">3</span>
         <div class="steps__body">
-          <p class="steps__head">ヒントを1つ伝える</p>
-          <p class="steps__text">ターゲットの中央がどのあたりかを、一言のヒントで伝えます。伝えたら画面を隠してチームに渡してください。</p>
+          <p class="steps__head">お題を1つ伝える</p>
+          <p class="steps__text">ターゲットの中央がどのあたりかを、ひとことのお題で伝えます。伝えたら画面を隠してチームに渡してください。</p>
         </div>
       </li>
       <li class="steps__item">
@@ -77,14 +103,21 @@
   </div>
 
   <div class="card">
-    <h2 class="card__title">ヒントのコツ</h2>
+    <h2 class="card__title">お題の出し方のコツ</h2>
+    <p class="field__help">「熱い」⟷「冷たい」のものさしなら、こんなお題が考えられます。</p>
+    <ul class="samples">
+      <li class="samples__item"><span class="samples__pos">「熱い」寄り</span><span class="samples__word">サウナ</span></li>
+      <li class="samples__item"><span class="samples__pos">まんなか</span><span class="samples__word">ぬるま湯</span></li>
+      <li class="samples__item"><span class="samples__pos">「冷たい」寄り</span><span class="samples__word">かき氷</span></li>
+    </ul>
     <ul class="tips">
       <li class="tips__item">数字・割合は使わない（例:「70%くらい」は禁止）</li>
       <li class="tips__item">「とても」「わずかに」のような程度を表す言葉は避ける</li>
-      <li class="tips__item">「〜な人」よりも、固有名詞ひとつで伝える方が伝わりやすい</li>
+      <li class="tips__item">「〜な人」よりも、ものや人の名前ひとつで伝える方が伝わりやすい</li>
       <li class="tips__item">短く、ワンフレーズで</li>
       <li class="tips__item">自分の感覚ではなく、一緒に遊ぶ人が理解しやすい言葉を選ぶ</li>
     </ul>
+    <p class="field__help">出題者の画面の「お題の考え方・見本を見る」から、ものさしごとの見本も見られます。</p>
   </div>
 
   <div class="card">
@@ -111,8 +144,8 @@
         <dd>オンにすると、中央ヒット時に山札からカードを1枚引いてゲームを1ラウンド延長します。</dd>
       </div>
       <div class="glossary__item">
-        <dt>ヒントを画面に表示する</dt>
-        <dd>オフにすると、チームの画面にヒントの文字は出ません。出題者が声に出して伝える遊び方になります。</dd>
+        <dt>お題を画面に表示する</dt>
+        <dd>オフにすると、チームの画面にお題の文字は出ません。出題者が声に出して伝える遊び方になります。</dd>
       </div>
     </dl>
     <p class="field__help">プリセット「公式」「かんたん」「むずかしい」は、これらの項目をまとめて切り替えるボタンです。1つでも自分で変えると「カスタム」表示になります。</p>

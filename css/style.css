@@ -116,6 +116,24 @@ a { color: var(--color-accent-deep); }
 }
 .bar__quit:hover { color: var(--color-danger); }
 
+/* 「？」ヘルプボタン。右端に寄せ、中断ボタンがあるときはその手前に並べる */
+.bar__help {
+  margin-left: auto;
+  width: var(--tap);
+  height: var(--tap);
+  flex: 0 0 auto;
+  border: var(--rule-bold) solid var(--color-rule-strong);
+  border-radius: 50%;
+  background: var(--color-paper);
+  color: var(--color-ink-2);
+  font-weight: 700;
+  font-size: var(--text-md);
+  line-height: 1;
+  padding: 0;
+}
+.bar__help:hover { background: var(--color-paper-2); }
+.bar__help + .bar__quit { margin-left: 0; }
+
 /* ============================================================
    カード
    ============================================================ */
@@ -594,6 +612,109 @@ body[data-screen="psychic"] .card { background: var(--color-paper); }
 .glossary__item:last-child { border-bottom: 0; padding-bottom: 0; }
 .glossary dt { font-weight: 700; }
 .glossary dd { margin: 2px 0 0; font-size: var(--text-sm); color: var(--color-ink-2); }
+
+/* ============================================================
+   説明まわり — プリセット説明・お題の見本・チームのお題ボックス
+   ============================================================ */
+.preset-desc { font-size: var(--text-sm); color: var(--color-ink-2); }
+
+.hintwrap { display: flex; flex-direction: column; gap: var(--space-2xs); }
+
+.samples__title { font-weight: 700; font-size: var(--text-sm); color: var(--color-ink-2); }
+.samples { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-3xs); }
+.samples__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--space-xs);
+  padding: var(--space-2xs) var(--space-xs);
+  border-radius: var(--radius-input);
+  background: var(--color-paper-2);
+}
+.samples__pos { font-size: var(--text-sm); font-weight: 600; color: var(--color-ink-3); }
+.samples__word { font-weight: 700; }
+
+/* ============================================================
+   モーダル（遊び方・この画面の説明）
+   ============================================================ */
+.modal {
+  width: min(30rem, calc(100vw - 2 * var(--space-sm)));
+  max-height: calc(100dvh - 2 * var(--space-sm));
+  margin: auto;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-card);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  box-shadow: var(--shadow-lift);
+  overflow: hidden;
+}
+.modal[open] { display: flex; flex-direction: column; }
+.modal::backdrop { background: oklch(22% 0.03 50 / 0.55); }
+
+.modal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-xs) var(--space-md) 0;
+}
+.modal__step { font-size: var(--text-sm); font-weight: 700; color: var(--color-ink-3); font-variant-numeric: tabular-nums; }
+.modal__skip {
+  min-height: var(--tap);
+  padding: 0 var(--space-2xs);
+  border: 0;
+  background: transparent;
+  color: var(--color-ink-3);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.modal__body {
+  padding: var(--space-xs) var(--space-md) var(--space-sm);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+.modal__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-md) var(--space-md);
+  border-top: var(--rule-hair) solid var(--color-rule);
+}
+.modal__foot .btn { min-width: 6.5rem; }
+.modal__foot--stack { flex-direction: column; align-items: stretch; }
+.modal__link { align-self: flex-start; font-weight: 600; min-height: var(--tap); display: inline-flex; align-items: center; }
+
+.tut { display: flex; flex-direction: column; gap: var(--space-sm); }
+.tut__title {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  line-height: var(--leading-tight);
+}
+.tut__text { color: var(--color-ink-2); }
+.tut__text strong { color: var(--color-ink); }
+.tut__note { font-size: var(--text-sm); color: var(--color-ink-3); }
+.tut__visual { max-width: 20rem; width: 100%; margin-inline: auto; }
+.glossary--tut { gap: var(--space-2xs); }
+.glossary--tut .glossary__item { padding-bottom: var(--space-2xs); }
+
+.helpbody { display: flex; flex-direction: column; gap: var(--space-xs); color: var(--color-ink-2); }
+.helpbody ol { margin: 0; padding-left: 1.4em; display: flex; flex-direction: column; gap: var(--space-2xs); }
+.helpbody strong { color: var(--color-ink); }
+
+.dots { display: flex; align-items: center; gap: 6px; }
+.dots__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--color-paper-3);
+  transition: width var(--dur-short) var(--ease-out), background-color var(--dur-short) var(--ease-out);
+}
+.dots__dot.is-active { width: 20px; background: var(--color-accent); }
 
 /* ============================================================
    幅の広い画面

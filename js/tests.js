@@ -1,5 +1,5 @@
 /*
- * game-logic.js の自己検証。
+ * game-logic.js とものさしデータ（data/prompts.js）の自己検証。
  * ブラウザでは tests.html から、コマンドラインでは `node js/tests.js` で走る。
  */
 (function (global) {
@@ -7,6 +7,9 @@
 
   if (typeof require === 'function' && !global.WavelengthLogic) {
     require('./game-logic.js');
+  }
+  if (typeof require === 'function' && !global.WAVELENGTH_PROMPTS) {
+    require('../data/prompts.js');
   }
   const L = global.WavelengthLogic;
 
@@ -375,6 +378,42 @@
     assertEqual(L.achievement(42, 42).tier, 6);
     assertEqual(L.achievement(50, 42).tier, 8);
     assert(typeof L.achievement(0, 21).message === 'string');
+  });
+
+  // ---- ものさしデータ ------------------------------------------------------
+
+  const DECK = global.WAVELENGTH_PROMPTS || [];
+  const faces = [];
+  DECK.forEach((card, i) => ['a', 'b'].forEach((f) => faces.push({ card: i, face: f, data: card[f] })));
+
+  test('ものさしデータ: 最大ラウンド数（15）以上のカードがある', () => {
+    assert(DECK.length >= L.LIMITS.rounds[1], 'カードが ' + DECK.length + ' 枚しかない');
+  });
+
+  test('ものさしデータ: 全面に left / right があり、同じ言葉を両端に使っていない', () => {
+    faces.forEach((x) => {
+      const d = x.data;
+      assert(d && typeof d.left === 'string' && d.left.trim(), 'card' + x.card + x.face + ' の left が空');
+      assert(typeof d.right === 'string' && d.right.trim(), 'card' + x.card + x.face + ' の right が空');
+      assert(d.left !== d.right, 'card' + x.card + x.face + ' の両端が同じ');
+    });
+  });
+
+  test('ものさしデータ: ペアの重複がない', () => {
+    const seen = {};
+    faces.forEach((x) => {
+      const key = x.data.left + '|' + x.data.right;
+      assert(!seen[key], '重複: ' + key);
+      seen[key] = true;
+    });
+  });
+
+  test('ものさしデータ: 全面にお題の見本（ex）が3つある', () => {
+    faces.forEach((x) => {
+      const ex = x.data.ex;
+      assert(Array.isArray(ex) && ex.length === 3, 'card' + x.card + x.face + '（' + x.data.left + '）の ex が3つではない');
+      ex.forEach((w) => assert(typeof w === 'string' && w.trim(), 'card' + x.card + x.face + ' の ex に空がある'));
+    });
   });
 
   // ---- 出力 --------------------------------------------------------------

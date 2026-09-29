@@ -17,9 +17,17 @@
     best: 'wavelength.best',
     game: 'wavelength.game',
     fx: 'wavelength.fx',
+    tutorial: 'wavelength.tutorialDone',
   };
 
   const PRESET_LABEL = { official: '公式', easy: 'かんたん', hard: 'むずかしい' };
+  // 数字は「くわしく設定」と下のサマリーに出るので、ここは違いが一目で分かる一言だけにする
+  const PRESET_DESC = {
+    official: '標準の遊び方です。',
+    easy: 'ゾーンが広くて当てやすい設定です。はじめてでも遊びやすいです。',
+    hard: 'ゾーンが狭く、中央の点数も低め、カード追加もなし。慣れた人向けです。',
+  };
+  const PRESET_DESC_CUSTOM = '「くわしく設定する」で変えた内容で遊びます。';
   const ZONE_LABEL = { 2: '中央ヒット！', 1: '中央のとなり', 3: '中央のとなり', 0: '外側ゾーン', 4: '外側ゾーン' };
 
   // ---- localStorage（失敗しても動く） ----------------------------------
@@ -132,7 +140,7 @@
     const pts = L.zonePoints(s).join('-');
     return s.rounds + 'ラウンド ・ ゾーン ' + s.wedgeDeg + '° ・ ' + pts + '点 ・ ' +
       (s.bonusOnCenter ? '中央でカード追加' : 'カード追加なし') + ' ・ ' +
-      (s.hintOnScreen ? 'ヒント表示' : 'ヒントは口頭');
+      (s.hintOnScreen ? 'お題は画面に表示' : 'お題は口頭');
   }
 
   renderers.setup = function renderSetup() {
@@ -142,6 +150,7 @@
     const preset = L.matchPreset(s);
     $('#presetBadge').textContent = preset ? PRESET_LABEL[preset] : 'カスタム';
     $('#presetBadge').classList.toggle('badge--custom', !preset);
+    $('#presetDesc').textContent = preset ? PRESET_DESC[preset] : PRESET_DESC_CUSTOM;
     $$('[data-preset]').forEach((b) => b.classList.toggle('is-active', b.dataset.preset === preset));
 
     $('#rounds').value = String(s.rounds);
@@ -207,7 +216,7 @@
 
   function startGame() {
     if (DECK.length === 0) {
-      alert('お題カードがありません（data/prompts.js を確認してください）');
+      alert('ものさしカードがありません（data/prompts.js を確認してください）');
       return;
     }
     if (window.WavelengthFX) window.WavelengthFX.unlock(); // ユーザー操作の中で AudioContext を起こしておく
@@ -245,7 +254,45 @@
     $('#pHintField').hidden = !g.settings.hintOnScreen;
     $('#pHintOral').hidden = g.settings.hintOnScreen;
     $('#pHint').value = cur.hint || '';
+    renderSamples(faceOf(g));
   };
+
+  /**
+   * お題の見本（左寄り・まんなか・右寄り）を出す。ターゲットの位置とは無関係に、
+   * いつも同じ3つを見せるので、答えのヒントにはならない。ex が無いカードでは何も出さない。
+   */
+  function renderSamples(face) {
+    const box = $('#pSamples');
+    const input = $('#pHint');
+    const ex = face && Array.isArray(face.ex) && face.ex.length >= 3 ? face.ex : null;
+    // 入力例は、選んだものさしに合った言葉にする（例:「熱い⟷冷たい」なら「サウナ」）
+    input.placeholder = ex ? '例：' + ex[0] : 'ターゲットの位置を表すひとこと';
+    if (!ex) {
+      box.hidden = true;
+      return;
+    }
+    const rows = [
+      ['「' + face.left + '」寄り', ex[0]],
+      ['まんなか', ex[1]],
+      ['「' + face.right + '」寄り', ex[2]],
+    ];
+    const list = $('#pSamplesList');
+    list.innerHTML = '';
+    rows.forEach((row) => {
+      const li = document.createElement('li');
+      li.className = 'samples__item';
+      const pos = document.createElement('span');
+      pos.className = 'samples__pos';
+      pos.textContent = row[0];
+      const word = document.createElement('span');
+      word.className = 'samples__word';
+      word.textContent = row[1];
+      li.appendChild(pos);
+      li.appendChild(word);
+      list.appendChild(li);
+    });
+    box.hidden = false;
+  }
 
   $$('[data-face]').forEach((b) => {
     b.addEventListener('click', () => {
@@ -278,6 +325,8 @@
     setEnds('t', faceOf(g));
     const showHint = g.settings.hintOnScreen && g.current.hint;
     $('#tHintBox').hidden = !showHint;
+    $('#tHintNote').hidden = !showHint;
+    $('#tOralNote').hidden = !!showHint;
     $('#tHint').textContent = g.current.hint || '';
     dials.team.setTarget(null);
     dials.team.setAngle(app.dialDeg, true);
@@ -370,7 +419,7 @@
         '<span class="history__points"></span>';
       li.querySelector('.history__prompt').textContent = face.left + ' ⟷ ' + face.right;
       const hintText = h.hint ? h.hint : (g.settings.hintOnScreen ? '（未入力）' : '（口頭で伝えた）');
-      li.querySelector('.history__meta').textContent = who + 'ヒント: ' + hintText;
+      li.querySelector('.history__meta').textContent = who + 'お題: ' + hintText;
       li.querySelector('.history__points').textContent = h.points + '点' + (h.bonus ? ' +1枚' : '');
       li.classList.toggle('history__item--zero', h.points === 0);
       li.classList.toggle('history__item--center', h.zoneIndex === 2);
@@ -397,6 +446,105 @@
     });
   });
 
+  // ---- 遊び方（チュートリアル）--------------------------------------------
+  // はじめて起動したときに自動で開き、セットアップ画面のボタンと「？」からいつでも開き直せる。
+  const tutorialDialog = $('#tutorialDialog');
+  const tutSteps = $$('#tutorialDialog [data-tut]');
+  const tut = { step: 0 };
+  const canDialog = typeof tutorialDialog.showModal === 'function';
+
+  // 図解用のダイヤル。「熱い⟷冷たい」の例で、ターゲットは熱い寄り（30度）に置く
+  (function buildTutorialDials() {
+    const official = L.normalizeSettings(L.PRESETS.official);
+    const zs = zoneSettings(official);
+    const make = (id) => window.Dial.create($(id), { interactive: false, ariaLabel: '説明用の図' });
+    const d1 = make('#tutDial1'); d1.setNeedleVisible(false);
+    const d2 = make('#tutDial2'); d2.setNeedleVisible(false); d2.setTarget(30, zs);
+    const d4 = make('#tutDial4'); d4.setAngle(38, true);
+    const d5 = make('#tutDial5'); d5.setTarget(30, zs); d5.setAngle(31, true); d5.highlightZone(2);
+  })();
+
+  // ステップの点（●）を作る
+  tutSteps.forEach(() => {
+    const dot = document.createElement('span');
+    dot.className = 'dots__dot';
+    $('#tutDots').appendChild(dot);
+  });
+
+  function showTutStep(i) {
+    tut.step = Math.max(0, Math.min(tutSteps.length - 1, i));
+    tutSteps.forEach((el, k) => { el.hidden = k !== tut.step; });
+    $$('#tutDots .dots__dot').forEach((el, k) => el.classList.toggle('is-active', k === tut.step));
+    $('#tutCount').textContent = (tut.step + 1) + ' / ' + tutSteps.length;
+    $('#tutPrev').style.visibility = tut.step === 0 ? 'hidden' : 'visible';
+    $('#tutNext').textContent = tut.step === tutSteps.length - 1 ? 'はじめる' : 'つぎへ';
+    $('#tutBody').scrollTop = 0;
+  }
+
+  function openTutorial() {
+    if (!canDialog) return; // 古いブラウザでは開かない（rules.html から読める）
+    if ($('#helpDialog').open) $('#helpDialog').close();
+    showTutStep(0);
+    if (!tutorialDialog.open) tutorialDialog.showModal();
+  }
+
+  $('#tutNext').addEventListener('click', () => {
+    if (tut.step >= tutSteps.length - 1) tutorialDialog.close();
+    else showTutStep(tut.step + 1);
+  });
+  $('#tutPrev').addEventListener('click', () => showTutStep(tut.step - 1));
+  $('#tutSkip').addEventListener('click', () => tutorialDialog.close());
+  // 「閉じる」「はじめる」「Esc」のどれで閉じても、次回から自動表示しない
+  tutorialDialog.addEventListener('close', () => save(KEYS.tutorial, true));
+  $('#tutorialBtn').addEventListener('click', openTutorial);
+
+  // ---- 「？」この画面の説明 ---------------------------------------------------
+  const HELP = {
+    psychic: {
+      title: '出題者の画面でやること',
+      html:
+        '<ol>' +
+        '<li>ものさし2つのうち、お題を出しやすい方を選ぶ。</li>' +
+        '<li>色のついた「ターゲット」の、いちばん濃い場所を確認する。</li>' +
+        '<li>その位置を表す<strong>お題</strong>をひとこと考える。数字や「とても」などの程度の言葉は避けるのがコツ。</li>' +
+        '<li>お題を伝えたら「画面を隠す」を押して、端末をチームに渡す。</li>' +
+        '</ol>' +
+        '<p>思いつかないときは、「お題の考え方・見本を見る」を開いてみましょう。</p>',
+    },
+    team: {
+      title: 'チームの画面でやること',
+      html:
+        '<ol>' +
+        '<li>出題者のお題を確認する。</li>' +
+        '<li>お題が、ものさしのどのあたりを指していそうか、みんなで相談する。出題者は話したり身振りをしたりできません。</li>' +
+        '<li>ダイヤルをドラッグかスライダーで動かして、「この位置で決定」を押す。</li>' +
+        '</ol>',
+    },
+    reveal: {
+      title: '結果の見かた',
+      html:
+        '<p>色のついた部分がターゲットです。針が指したゾーンの点数がもらえます。</p>' +
+        '<p>中央にぴったり当たると、カードが1枚増えます（設定でオフにできます）。</p>' +
+        '<p>「次のラウンドへ」を押したら、端末を次の出題者に渡しましょう。</p>',
+    },
+  };
+  const HELP_FALLBACK = {
+    title: '遊び方',
+    html: '<p>出題者のお題を頼りに、ターゲットの位置にダイヤルを合わせるゲームです。</p>',
+  };
+
+  const helpDialog = $('#helpDialog');
+  function openHelp() {
+    if (typeof helpDialog.showModal !== 'function') return;
+    const h = HELP[app.screen] || HELP_FALLBACK;
+    $('#helpTitle').textContent = h.title;
+    $('#helpBody').innerHTML = h.html; // 上の固定文言のみ。ユーザー入力は入らない
+    if (!helpDialog.open) helpDialog.showModal();
+  }
+  $$('[data-help]').forEach((b) => b.addEventListener('click', openHelp));
+  $('#helpClose').addEventListener('click', () => helpDialog.close());
+  $('#helpTutorial').addEventListener('click', openTutorial);
+
   // ---- 起動 ----------------------------------------------------------------
   (function boot() {
     const saved = load(KEYS.game);
@@ -408,5 +556,7 @@
       return;
     }
     show('setup');
+    // はじめての起動なら、遊び方を自動で見せる
+    if (!load(KEYS.tutorial)) openTutorial();
   })();
 })();

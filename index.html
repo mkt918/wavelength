@@ -17,7 +17,7 @@
   <header class="title">
     <p class="title__kicker">協力モード</p>
     <h1 class="title__name">ウェーブレングス</h1>
-    <p class="title__lead">出題者のヒントだけを頼りに、みんなでダイヤルを合わせよう。1台の端末を回して遊びます。</p>
+    <p class="title__lead">出題者のお題だけを頼りに、みんなでダイヤルを合わせよう。1台の端末を回して遊びます。</p>
   </header>
 
   <div class="card">
@@ -40,9 +40,11 @@
       <button type="button" class="segmented__btn" data-preset="easy">かんたん</button>
       <button type="button" class="segmented__btn" data-preset="hard">むずかしい</button>
     </div>
+    <p class="preset-desc" id="presetDesc"></p>
 
     <details class="details" id="settingsDetails">
       <summary class="details__summary">くわしく設定する</summary>
+      <p class="field__help">ルールを自分好みに変えられます。1つでも変えると「カスタム」になります。</p>
 
       <div class="setting">
         <div class="setting__row">
@@ -50,6 +52,7 @@
           <output class="setting__value" id="roundsValue" for="rounds">7</output>
         </div>
         <input type="range" id="rounds" class="range" min="3" max="15" step="1" value="7" data-setting="rounds">
+        <p class="field__help">使うカードの枚数です。多いほど長く遊べます。</p>
       </div>
 
       <div class="setting">
@@ -59,7 +62,7 @@
         </div>
         <input type="range" id="wedgeDeg" class="range" min="4" max="14" step="1" value="7" data-setting="wedgeDeg">
         <div class="dial dial--preview" id="dialPreview" aria-hidden="true"></div>
-        <p class="field__help">1ゾーンの角度。広いほど当てやすくなります。</p>
+        <p class="field__help">ターゲットの色のついた部分の広さです。広いほど当てやすくなります。</p>
       </div>
 
       <div class="setting">
@@ -70,6 +73,7 @@
           <button type="button" class="segmented__btn" data-setting="centerPoints" data-value="3">3点</button>
           <button type="button" class="segmented__btn" data-setting="centerPoints" data-value="4">4点</button>
         </div>
+        <p class="field__help">ターゲットのど真ん中に当てたときの点数です。</p>
       </div>
 
       <div class="setting">
@@ -80,6 +84,7 @@
           <button type="button" class="segmented__btn" data-setting="outerPoints" data-value="1">1点</button>
           <button type="button" class="segmented__btn" data-setting="outerPoints" data-value="2">2点</button>
         </div>
+        <p class="field__help">いちばん外側のゾーンに当てたときの点数です。</p>
       </div>
 
       <label class="switch">
@@ -87,13 +92,14 @@
         <input type="checkbox" class="switch__input" id="bonusOnCenter" data-setting="bonusOnCenter">
         <span class="switch__track" aria-hidden="true"></span>
       </label>
+      <p class="field__help">中央にぴったり当てると、山札から1枚足されて1ラウンド増えます。</p>
 
       <label class="switch">
-        <span class="switch__label">ヒントを画面に表示する</span>
+        <span class="switch__label">お題を画面に表示する</span>
         <input type="checkbox" class="switch__input" id="hintOnScreen" data-setting="hintOnScreen">
         <span class="switch__track" aria-hidden="true"></span>
       </label>
-      <p class="field__help">オフにすると出題者は口頭でヒントを伝えます。</p>
+      <p class="field__help">オフにすると、出題者はお題を声に出して伝えます（画面には出ません）。</p>
 
       <label class="switch">
         <span class="switch__label">結果発表の演出（音・振動）</span>
@@ -110,7 +116,8 @@
 
   <div class="actions">
     <button type="button" class="btn btn--primary btn--big" id="startBtn">はじめる</button>
-    <a class="btn btn--ghost" href="rules.html">ルールを読む</a>
+    <button type="button" class="btn" id="tutorialBtn">はじめての人へ：遊び方（1分）</button>
+    <a class="btn btn--ghost" href="rules.html">くわしいルールを読む</a>
   </div>
 </section>
 
@@ -134,11 +141,13 @@
   <header class="bar">
     <span class="bar__round" id="pRound">ラウンド 1 / 7</span>
     <span class="bar__role">出題者の画面</span>
+    <button type="button" class="bar__help" data-help aria-label="この画面の説明を見る">？</button>
     <button type="button" class="bar__quit" data-quit>中断</button>
   </header>
 
   <div class="card">
-    <h2 class="card__title">お題を選ぶ</h2>
+    <h2 class="card__title">ものさしを選ぶ</h2>
+    <p class="field__help">2つのうち、お題を出しやすい方をタップしてください。</p>
     <div class="faces">
       <button type="button" class="face" data-face="a">
         <span class="face__side" data-slot="aLeft"></span>
@@ -162,15 +171,32 @@
       </div>
       <div class="dial" id="dialPsychic"></div>
     </div>
-    <p class="field__help">中央（濃い色）の位置を表すヒントを考えてください。数字・「とても」などの程度の言葉は使わないのがコツです。</p>
+    <p class="field__help">色のついた場所がターゲットです。いちばん濃い色のあたりを、チームに「お題（ひとこと）」で伝えます。</p>
 
     <label class="field" id="pHintField">
-      <span class="field__label">ヒント</span>
-      <input type="text" id="pHint" class="field__input" maxlength="30" autocomplete="off" placeholder="例: カレー">
+      <span class="field__label">お題（ひとこと）</span>
+      <input type="text" id="pHint" class="field__input" maxlength="30" autocomplete="off" placeholder="ターゲットの位置を表すひとこと">
     </label>
-    <p class="field__help" id="pHintOral" hidden>ヒントは声に出して伝えてください。</p>
+    <p class="field__help" id="pHintOral" hidden>お題は声に出して伝えてください。</p>
 
-    <button type="button" class="btn btn--primary btn--big" id="pDoneBtn">ヒントを伝えた — 画面を隠す</button>
+    <details class="details" id="pTips">
+      <summary class="details__summary">お題の考え方・見本を見る</summary>
+      <p class="field__help">ターゲットの位置を、ひとことで伝えます。次のことに気をつけると伝わりやすくなります。</p>
+      <ul class="tips">
+        <li class="tips__item">数字や割合は使わない（例：「70%くらい」）</li>
+        <li class="tips__item">「とても」「ちょっと」など、程度の言葉は避ける</li>
+        <li class="tips__item">「〜な人」より、ものや人の名前のほうが伝わりやすい</li>
+        <li class="tips__item">短く、ひとことで</li>
+        <li class="tips__item">自分の感覚ではなく、一緒に遊ぶ人に伝わる言葉を選ぶ</li>
+      </ul>
+      <div id="pSamples" hidden>
+        <p class="samples__title">このものさしのお題の見本</p>
+        <ul class="samples" id="pSamplesList"></ul>
+        <p class="field__help">見本は目安です。ターゲットの位置に合わせて、自分の言葉で考えてみましょう。</p>
+      </div>
+    </details>
+
+    <button type="button" class="btn btn--primary btn--big" id="pDoneBtn">お題を伝えた — 画面を隠す</button>
   </div>
 </section>
 
@@ -194,12 +220,17 @@
   <header class="bar">
     <span class="bar__round" id="tRound">ラウンド 1 / 7</span>
     <span class="bar__role">チームの画面</span>
+    <button type="button" class="bar__help" data-help aria-label="この画面の説明を見る">？</button>
     <button type="button" class="bar__quit" data-quit>中断</button>
   </header>
 
-  <div class="hint" id="tHintBox">
-    <span class="hint__label">ヒント</span>
-    <span class="hint__text" id="tHint"></span>
+  <div class="hintwrap">
+    <div class="hint" id="tHintBox">
+      <span class="hint__label">お題</span>
+      <span class="hint__text" id="tHint"></span>
+    </div>
+    <p class="field__help" id="tHintNote">出題者が出したお題です。ものさしのどのあたりを指していそうか、みんなで相談しましょう。</p>
+    <p class="field__help" id="tOralNote" hidden>出題者が声に出したお題を思い出して、ものさしのどのあたりを指していそうか相談しましょう。</p>
   </div>
 
   <div class="card">
@@ -229,6 +260,7 @@
   <header class="bar">
     <span class="bar__round" id="rRound">ラウンド 1 / 7</span>
     <span class="bar__role">結果</span>
+    <button type="button" class="bar__help" data-help aria-label="この画面の説明を見る">？</button>
   </header>
 
   <div class="card">
@@ -247,7 +279,7 @@
     </div>
 
     <dl class="stats">
-      <div class="stats__item"><dt>ヒント</dt><dd id="rHint">—</dd></div>
+      <div class="stats__item"><dt>お題</dt><dd id="rHint">—</dd></div>
       <div class="stats__item"><dt>合計</dt><dd id="rTotal">0</dd></div>
       <div class="stats__item"><dt>残り</dt><dd id="rLeft">0</dd></div>
     </dl>
@@ -281,6 +313,112 @@
     <button type="button" class="btn btn--ghost" id="fSetupBtn">設定にもどる</button>
   </div>
 </section>
+
+<!-- ============================================================
+     遊び方（はじめて起動したときに自動表示・いつでも開き直せる）
+     ============================================================ -->
+<dialog class="modal" id="tutorialDialog" aria-label="遊び方の説明">
+  <div class="modal__head">
+    <p class="modal__step" id="tutCount">1 / 5</p>
+    <button type="button" class="modal__skip" id="tutSkip">閉じる</button>
+  </div>
+
+  <div class="modal__body" id="tutBody">
+    <section class="tut" data-tut>
+      <h2 class="tut__title">見えないターゲットを、みんなで当てよう</h2>
+      <div class="dialwrap tut__visual">
+        <div class="dialwrap__ends">
+          <span class="dialwrap__end">熱い</span>
+          <span class="dialwrap__end dialwrap__end--right">冷たい</span>
+        </div>
+        <div class="dial" id="tutDial1" aria-hidden="true"></div>
+      </div>
+      <p class="tut__text">1人が「出題者」になり、線の上のどこかにある「ターゲット」の位置を、<strong>ひとこと（お題）</strong>だけでチームに伝えます。チームはお題を頼りに、ダイヤルをターゲットの位置に合わせます。</p>
+      <dl class="glossary glossary--tut">
+        <div class="glossary__item"><dt>ものさし</dt><dd>両端に言葉が書かれた線。上の図なら「熱い」⟷「冷たい」</dd></div>
+        <div class="glossary__item"><dt>ターゲット</dt><dd>ものさしの上にある正解のゾーン。出題者にだけ見える</dd></div>
+        <div class="glossary__item"><dt>お題</dt><dd>出題者が言う「ひとこと」</dd></div>
+        <div class="glossary__item"><dt>ダイヤル</dt><dd>チームが動かす針</dd></div>
+      </dl>
+    </section>
+
+    <section class="tut" data-tut hidden>
+      <h2 class="tut__title">出題者だけが、ターゲットを見る</h2>
+      <div class="dialwrap tut__visual">
+        <div class="dialwrap__ends">
+          <span class="dialwrap__end">熱い</span>
+          <span class="dialwrap__end dialwrap__end--right">冷たい</span>
+        </div>
+        <div class="dial" id="tutDial2" aria-hidden="true"></div>
+      </div>
+      <p class="tut__text">色のついた部分がターゲットです。<strong>濃い色ほど高得点</strong>。ここは出題者にだけ見えます。</p>
+      <p class="tut__note">端末を出題者に渡すと、ターゲットが表示されます。ほかの人は画面を見ないでください。</p>
+    </section>
+
+    <section class="tut" data-tut hidden>
+      <h2 class="tut__title">お題は「ひとこと」で位置を伝える</h2>
+      <p class="tut__text">「熱い」⟷「冷たい」のものさしなら、こんな感じです。</p>
+      <ul class="samples samples--tut">
+        <li class="samples__item"><span class="samples__pos">「熱い」寄り</span><span class="samples__word">サウナ</span></li>
+        <li class="samples__item"><span class="samples__pos">まんなか</span><span class="samples__word">ぬるま湯</span></li>
+        <li class="samples__item"><span class="samples__pos">「冷たい」寄り</span><span class="samples__word">かき氷</span></li>
+      </ul>
+      <p class="tut__text">ターゲットの位置に合う言葉を考えて、声に出すか、画面に入力します。</p>
+      <ul class="tips">
+        <li class="tips__item">数字は使わない</li>
+        <li class="tips__item">「とても」など、程度の言葉は避ける</li>
+        <li class="tips__item">短く、ひとことで</li>
+      </ul>
+    </section>
+
+    <section class="tut" data-tut hidden>
+      <h2 class="tut__title">チームで相談して、ダイヤルを合わせる</h2>
+      <div class="dialwrap tut__visual">
+        <div class="dialwrap__ends">
+          <span class="dialwrap__end">熱い</span>
+          <span class="dialwrap__end dialwrap__end--right">冷たい</span>
+        </div>
+        <div class="dial" id="tutDial4" aria-hidden="true"></div>
+      </div>
+      <p class="tut__text">出題者のお題を聞いたら、チームで相談します。ダイヤルをドラッグして「この位置で決定」を押しましょう。</p>
+      <p class="tut__note">出題者はここから先、話したり身振りをしたりできません。</p>
+    </section>
+
+    <section class="tut" data-tut hidden>
+      <h2 class="tut__title">答え合わせ！中央に近いほど高得点</h2>
+      <div class="dialwrap tut__visual">
+        <div class="dialwrap__ends">
+          <span class="dialwrap__end">熱い</span>
+          <span class="dialwrap__end dialwrap__end--right">冷たい</span>
+        </div>
+        <div class="dial" id="tutDial5" aria-hidden="true"></div>
+      </div>
+      <p class="tut__text">ターゲットが公開されて、針が指したゾーンの点数がもらえます。<strong>中央にぴったり当たると、カードが1枚増えます。</strong>カードを使い切ったら終わりです。</p>
+      <p class="tut__note">端末は「出題者 → チーム」の順に渡し合います。</p>
+      <a class="modal__link" href="rules.html">くわしいルールを読む</a>
+    </section>
+  </div>
+
+  <div class="modal__foot">
+    <button type="button" class="btn" id="tutPrev">もどる</button>
+    <div class="dots" id="tutDots" aria-hidden="true"></div>
+    <button type="button" class="btn btn--primary" id="tutNext">つぎへ</button>
+  </div>
+</dialog>
+
+<!-- ============================================================
+     この画面の説明（各画面の「？」ボタン）
+     ============================================================ -->
+<dialog class="modal" id="helpDialog" aria-labelledby="helpTitle">
+  <div class="modal__body">
+    <h2 class="tut__title" id="helpTitle">この画面でやること</h2>
+    <div class="helpbody" id="helpBody"></div>
+  </div>
+  <div class="modal__foot modal__foot--stack">
+    <button type="button" class="btn btn--primary" id="helpClose">とじる</button>
+    <button type="button" class="btn btn--ghost" id="helpTutorial">遊び方を最初から見る</button>
+  </div>
+</dialog>
 
 <script src="data/prompts.js"></script>
 <script src="js/game-logic.js"></script>
